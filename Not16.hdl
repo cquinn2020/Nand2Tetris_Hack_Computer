@@ -1,0 +1,35 @@
+// Name: Casey Quinn
+// UIN: 430009866
+
+/**
+ * 16-bit Not:
+ * for i=0..15: out[i] = not in[i]
+ */
+
+/* - The logic is the same here as for a 
+     single bit not gate (implemented with nor); however,
+     we have a 16-bit nor so its implemented as a "bus" with 16 inputs.
+*/
+
+CHIP Not16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    Nor(a = in[0], b = in[0], out = out[0]);
+    Nor(a = in[1], b = in[1], out = out[1]);
+    Nor(a = in[2], b = in[2], out = out[2]);
+    Nor(a = in[3], b = in[3], out = out[3]);
+    Nor(a = in[4], b = in[4], out = out[4]);
+    Nor(a = in[5], b = in[5], out = out[5]);
+    Nor(a = in[6], b = in[6], out = out[6]);
+    Nor(a = in[7], b = in[7], out = out[7]);
+    Nor(a = in[8], b = in[8], out = out[8]);
+    Nor(a = in[9], b = in[9], out = out[9]);
+    Nor(a = in[10], b = in[10], out = out[10]);
+    Nor(a = in[11], b = in[11], out = out[11]);
+    Nor(a = in[12], b = in[12], out = out[12]);
+    Nor(a = in[13], b = in[13], out = out[13]);
+    Nor(a = in[14], b = in[14], out = out[14]);
+    Nor(a = in[15], b = in[15], out = out[15]);
+}

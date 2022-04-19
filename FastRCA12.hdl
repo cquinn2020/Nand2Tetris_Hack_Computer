@@ -1,0 +1,55 @@
+// Name: Casey Quinn
+// UIN: 430009866
+
+/**
+ * Optimizes the carry propagation delay along RCA4 boundaries
+ * using duplication and parallel assembly of logic 
+ * The chip performs out=a+b
+ * Both inputs a and b are in UNSIGNED format
+ * carry output reflects the overflow 
+ */
+
+
+CHIP FastRCA12 {
+    IN a[12], b[12];
+    OUT out[12], carry;
+	
+    PARTS:
+    // First RCA4 (All FA) to sum the first 4 bits.
+    RCA4allFA(a=a[0..3], b=b[0..3], carryIn=false, sum=out[0..3], cout=c1);
+
+    // Duplicate RCA4 (All FA) w/ one having cin 0 and the other cin 1.
+    // - each output will go to a 4bit MUX2 with select being the carryout
+    // from the first adder.
+    
+    // -> first one will have cin of 0
+    RCA4allFA(a=a[4..7], b=b[4..7], carryIn=false, sum=sum4to7A, cout=c2A);
+    // -> second will have cin of 1.
+    RCA4allFA(a=a[4..7], b=b[4..7], carryIn=true, sum=sum4to7B, cout=c2B);
+    
+    
+    // Second set of duplicate RCA4 (all FA) with one havin cin 0 and other 1.
+    // - once again the output sums will go to 4bit MUX2 with sel being ORed from 
+    // first set of duplicates.
+    
+    // -> first one will have cin of 0
+    RCA4allFA(a=a[8..11], b=b[8..11], carryIn=false, sum=sum8to11A, cout=c3A);
+    // -> second will have cin of 1.
+    RCA4allFA(a=a[8..11], b=b[8..11], carryIn=true, sum=sum8to11B, cout=c3B);
+    
+    // First MUX2 (4bit) for sum4to7A and sum4to7B with select c1.
+    FourBitMUX2(a=sum4to7A, b=sum4to7B, sub=c1, out=out[4..7]);
+    
+    // Second MUX2 (4bit) for sum8to11A and sum8to11B.
+    // -> need to get the select bit by ORing c2A/c2B
+    Mux(a=c2A, b=c2B, sel=c1, out=sel4MUXB);
+    
+    // And(a=c2A, b=c2B, out=sel4MUXB);
+    FourBitMUX2(a=sum8to11A, b=sum8to11B, sub=sel4MUXB, out=out[8..11]);
+  
+    // Final carry out is ORed from last set of RCA4's.
+    // And(a=c3A, b=c3B, out=carry);
+    Mux(a=c3A, b=c3B, sel=sel4MUXB, out=carry);
+    
+    
+}

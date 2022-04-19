@@ -1,0 +1,31 @@
+// Name: Casey Quinn
+// UIN: 430009866
+
+// 16-bit MUX 16 used to handle the initial conditions for x
+// and y inputs. Because there are four possibilities for x/y
+// manipulations we we can use a MUX4 with sel[2].
+
+CHIP SixteenBitMUX4 {
+    IN a[16], b[16], c[16], d[16], sel1, sel2;
+    OUT out[16];
+
+    PARTS:
+    // Handle a and b first
+    FourBitMUX2(a=a[0..3], b=b[0..3], sub=sel1, out=outA1); // 4
+    FourBitMUX2(a=a[4..7], b=b[4..7], sub=sel1, out=outA2); // 8
+    FourBitMUX2(a=a[8..11], b=b[8..11], sub=sel1, out=outA3); // 12
+    FourBitMUX2(a=a[12..15], b=b[12..15], sub=sel1, out=outA4); // 16
+
+    // Handle c and d:
+    FourBitMUX2(a=c[0..3], b=d[0..3], sub=sel1, out=outB1); // 4
+    FourBitMUX2(a=c[4..7], b=d[4..7], sub=sel1, out=outB2); // 8
+    FourBitMUX2(a=c[8..11], b=d[8..11], sub=sel1, out=outB3); // 12
+    FourBitMUX2(a=c[12..15], b=d[12..15], sub=sel1, out=outB4); // 16
+
+    // Second stage:
+    FourBitMUX2(a=outA1, b=outB1, sub=sel2, out=out[0..3]); // 4
+    FourBitMUX2(a=outA2, b=outB2, sub=sel2, out=out[4..7]); // 8
+    FourBitMUX2(a=outA3, b=outB3, sub=sel2, out=out[8..11]); // 12
+    FourBitMUX2(a=outA4, b=outB4, sub=sel2, out=out[12..15]); // 16
+
+}
