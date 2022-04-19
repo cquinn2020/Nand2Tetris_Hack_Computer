@@ -1,0 +1,24 @@
+// NAME: Casey Quinn
+// UIN: 430009866
+
+/**
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t] == 1) out[t+1] = 0
+ * else if (load[t] == 1)  out[t+1] = in[t]
+ * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                    out[t+1] = out[t]
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+
+    PARTS:
+    Mux16(a=recycleOut2, b=in, sel=load, out=out1);
+    Mux16(a=out1, b=false, sel=reset, out=out2);
+    Register16Bit(in=out2, load=true, out=out, out=recycleOut);
+    Inc16(in=recycleOut, out=incremented);
+    Mux16(a=recycleOut, b=incremented, sel=inc, out=recycleOut2);
+    
+
+}

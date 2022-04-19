@@ -1,0 +1,30 @@
+// NAME: Casey Quinn
+// UIN: 430009866
+
+/**
+ * Memory of 64 registers, each 16 bit-wide. The pin out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+// The project decription says we can use RAM16 modular to construct RAM64
+// and that is going to be my strategy seeing as we built RAM16 in lab.
+// - inner 4 address bits will determine register in each RAM16
+// while the last 2 will determine which RAM16 out of the 4 to select
+CHIP RAM64 {
+    IN in[16], load, address[6];
+    OUT out[16];
+
+    PARTS:
+    // load is one bit (using buit-in DMUX 4 way)
+    DMux4Way(in=load ,sel=address[4..5] ,a=load0 ,b=load1 ,c=load2 ,d=load3);
+    // To build RAM64 use 4 RAM16
+    RAM16(in=in, load=load0, address=address[0..3], out=ram0);
+    RAM16(in=in, load=load1, address=address[0..3], out=ram1);
+    RAM16(in=in, load=load2, address=address[0..3], out=ram2);
+    RAM16(in=in, load=load3, address=address[0..3], out=ram3);
+    // Use built-in Mux4Way16 for output with last two address bits
+    Mux4Way16(a=ram0 ,b=ram1 ,c=ram2 ,d=ram3 ,sel=address[4..5] ,out=out );
+   
+}

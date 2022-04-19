@@ -1,0 +1,35 @@
+// Name: Casey Quinn
+// UIN: 430009866
+
+
+/**
+ * Memory of 512 registers, each 16 bit-wide. The pin out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+ 
+
+CHIP RAM512 {
+    IN in[16], load, address[9];
+    OUT out[16];
+
+    PARTS:
+    // Use DMUX 8 way to decide which of the 8 RAM64 to load/read from
+    DMux8Way(in=load ,sel=address[6..8] ,a=load0 ,b=load1 ,c=load2 ,d=load3 ,e=load4
+            ,f=load5 ,g=load6 ,h=load7);
+
+    // Make the 8 RAM64 to construct the RAM512
+    RAM64(in=in, load=load0, address=address[0..5], out=ram0);
+    RAM64(in=in, load=load1, address=address[0..5], out=ram1);
+    RAM64(in=in, load=load2, address=address[0..5], out=ram2);
+    RAM64(in=in, load=load3, address=address[0..5], out=ram3);
+    RAM64(in=in, load=load4, address=address[0..5], out=ram4);
+    RAM64(in=in, load=load5, address=address[0..5], out=ram5);
+    RAM64(in=in, load=load6, address=address[0..5], out=ram6);
+    RAM64(in=in, load=load7, address=address[0..5], out=ram7);
+
+    // Use MUX8Way16 to pick one of the ram outputs
+    Mux8Way16(a=ram0 ,b=ram1 ,c=ram2 ,d=ram3 ,e=ram4 ,f=ram5 ,g=ram6 ,h=ram7 ,
+              sel=address[6..8] ,out=out );
+}
